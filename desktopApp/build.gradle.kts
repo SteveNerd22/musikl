@@ -21,8 +21,19 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "io.rgbcolor.musikl"
+            packageName = "Musikl"
             packageVersion = "1.0.0"
+
+            windows {
+                iconFile.set(project.file("src/main/resources/icon.ico"))
+            }
+            macOS {
+                iconFile.set(project.file("src/main/resources/icon.icns"))
+                bundleID = "io.rgbcolor.musikl"
+            }
+            linux {
+                iconFile.set(project.file("src/main/resources/icon.png"))
+            }
         }
     }
 }
