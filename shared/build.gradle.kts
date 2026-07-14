@@ -16,9 +16,25 @@ kotlin {
     jvm()
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
+        val jvmCommonMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(libs.newpipe.extractor)
+                implementation(libs.okhttp)
+            }
         }
+
+        androidMain {
+            dependsOn(jvmCommonMain)
+            dependencies {
+                implementation(libs.compose.uiToolingPreview)
+            }
+        }
+
+        jvmMain {
+            dependsOn(jvmCommonMain)
+        }
+
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -28,6 +44,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
