@@ -18,7 +18,15 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.runtime)
     debugImplementation(libs.compose.uiTooling)
+
+    implementation(libs.compose.materialIconsCore)
+    implementation(libs.compose.materialIconsExtended)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
+    coreLibraryDesugaring(libs.android.desugarJdkLibs.nio)
 }
 
 android {
@@ -43,6 +51,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
