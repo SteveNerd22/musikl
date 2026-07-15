@@ -1,6 +1,7 @@
 package io.rgbcolor.musikl
 
-fun createSearchViewModel(): SearchViewModel {
-    val provider = createDefaultMusicSearchProvider()
-    return SearchViewModel(provider)
-}
+fun createSearchViewModel(): SearchViewModel =
+    SearchViewModel(ProviderRegistry.musicSearchProvider())
+
+fun createPlayerViewModel(): PlayerViewModel =
+    PlayerViewModel(ProviderRegistry.musicPlayerProvider())

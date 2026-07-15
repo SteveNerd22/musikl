@@ -33,6 +33,11 @@ kotlin {
 
         jvmMain {
             dependsOn(jvmCommonMain)
+            dependencies {
+                implementation("${libs.javafx.base.get()}:win")
+                implementation("${libs.javafx.media.get()}:win")
+                implementation("${libs.javafx.graphics.get()}:win")
+            }
         }
 
         commonMain.dependencies {

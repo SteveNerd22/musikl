@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory
+import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 private object NewPipeInit {
@@ -26,6 +27,16 @@ class NewPipeSearchProvider : MusicSearchProvider {
 
     override suspend fun searchVideos(query: String): List<TrackResult> =
         search(query, YoutubeSearchQueryHandlerFactory.MUSIC_VIDEOS)
+
+    override suspend fun resolveStreamUrl(pageUrl: String): String = withContext(Dispatchers.IO) {
+        NewPipeInit.ready
+
+        val streamInfo = StreamInfo.getInfo(ServiceList.YouTube, pageUrl)
+        val bestAudio = streamInfo.audioStreams.maxByOrNull { it.averageBitrate }
+            ?: error("Nessuno stream audio disponibile per questo contenuto")
+
+        bestAudio.content
+    }
 
     private suspend fun searchFirst(query: String, contentFilter: String): TrackResult =
         search(query, contentFilter).firstOrNull()
@@ -50,6 +61,6 @@ class NewPipeSearchProvider : MusicSearchProvider {
     private fun StreamInfoItem.toTrackResult(): TrackResult {
         val thumbnailUrl = thumbnails.maxByOrNull { it.height }?.url
             ?: error("Nessuna thumbnail disponibile per \"$name\"")
-        return TrackResult(title = name, thumbnailUrl = thumbnailUrl)
+        return TrackResult(title = name, thumbnailUrl = thumbnailUrl, pageUrl = url)
     }
 }

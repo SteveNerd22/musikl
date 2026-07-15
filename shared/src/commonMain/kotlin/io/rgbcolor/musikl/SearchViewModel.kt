@@ -13,17 +13,13 @@ import kotlinx.coroutines.withContext
 class SearchViewModel(private val provider: MusicSearchProvider) {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-
-    // Usiamo un scope dedicato al ViewModel
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
     fun performSearch(query: String, isMusic: Boolean) {
-        // Lanciamo una coroutine "fire-and-forget"
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                // Eseguiamo la ricerca su un thread di background
                 val results = withContext(Dispatchers.IO) {
                     if (isMusic) provider.searchSongs(query) else provider.searchVideos(query)
                 }
@@ -33,9 +29,11 @@ class SearchViewModel(private val provider: MusicSearchProvider) {
             }
         }
     }
+
+    suspend fun resolveStreamUrl(track: TrackResult): String =
+        provider.resolveStreamUrl(track.pageUrl)
 }
 
-// Un semplice modello per lo stato della UI
 data class SearchUiState(
     val results: List<TrackResult> = emptyList(),
     val isLoading: Boolean = false,

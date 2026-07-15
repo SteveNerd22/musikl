@@ -7,4 +7,5 @@ interface MusicSearchProvider {
     suspend fun searchFirstVideo(query: String) : TrackResult
     suspend fun searchSongs(query: String) : List<TrackResult>
     suspend fun searchVideos(query: String) : List<TrackResult>
+    suspend fun resolveStreamUrl(pageUrl: String): String
 }

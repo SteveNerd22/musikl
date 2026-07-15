@@ -1,5 +1,6 @@
-﻿package io.rgbcolor.musikl
+﻿package io.rgbcolor.musikl.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,10 +39,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import io.rgbcolor.musikl.model.TrackResult
 import coil3.compose.AsyncImage
+import io.rgbcolor.musikl.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchMainScreen(viewModel: SearchViewModel) {
+fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> Unit) {
     var isMusicTab by remember { mutableStateOf(true) }
     var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
@@ -88,7 +90,7 @@ fun SearchMainScreen(viewModel: SearchViewModel) {
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(uiState.results) { track ->
-                        TrackItem(track)
+                        TrackItem(track, onClick = { onTrackClick(track) })
                     }
                 }
             }
@@ -97,9 +99,12 @@ fun SearchMainScreen(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun TrackItem(track: TrackResult) {
+fun TrackItem(track: TrackResult, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
         shape = RoundedCornerShape(8.dp)
     ) {

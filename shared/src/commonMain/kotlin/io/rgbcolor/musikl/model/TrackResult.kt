@@ -2,5 +2,6 @@
 
 data class TrackResult (
     val title: String,
-    val thumbnailUrl: String
+    val thumbnailUrl: String,
+    val pageUrl: String
 )

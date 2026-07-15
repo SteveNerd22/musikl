@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.compose.materialIconsExtended)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
+    implementation(libs.media3.exoplayer)
     coreLibraryDesugaring(libs.android.desugarJdkLibs.nio)
 }
 
