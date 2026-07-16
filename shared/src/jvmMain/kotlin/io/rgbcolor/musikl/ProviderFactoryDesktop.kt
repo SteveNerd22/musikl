@@ -1,6 +1,6 @@
 ﻿package io.rgbcolor.musikl
 
 import io.rgbcolor.musikl.player.MusicPlayerProvider
-import io.rgbcolor.musikl.player.javafx.JavaFxMusicPlayerProvider
+import io.rgbcolor.musikl.player.vlcj.VlcjMusicPlayerProvider
 
-actual fun defaultMusicPlayerProvider(): MusicPlayerProvider? = JavaFxMusicPlayerProvider()
+actual fun defaultMusicPlayerProvider(): MusicPlayerProvider? = VlcjMusicPlayerProvider()

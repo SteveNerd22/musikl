@@ -37,6 +37,14 @@ class SearchViewModel(private val provider: MusicSearchProvider) {
         }
     }
 
+    fun updateQuery(query: String) {
+        _uiState.value = _uiState.value.copy(query = query)
+    }
+
+    fun updateTab(isMusicTab: Boolean) {
+        _uiState.value = _uiState.value.copy(isMusicTab = isMusicTab)
+    }
+
     suspend fun resolveStreamUrl(track: TrackResult): String =
         provider.resolveStreamUrl(track.pageUrl)
 }
@@ -45,5 +53,7 @@ data class SearchUiState(
     val songResults: List<TrackResult> = emptyList(),
     val videoResults: List<TrackResult> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val query: String = "",
+    val isMusicTab: Boolean = true
 )

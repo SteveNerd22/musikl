@@ -13,6 +13,12 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.material3)
+
+    implementation(libs.compose.materialIconsCore)
+    implementation(libs.compose.materialIconsExtended)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 }
 
 compose.desktop {
