@@ -9,21 +9,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.cancellation.CancellationException
 
 class SearchViewModel(private val provider: MusicSearchProvider) {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
-    fun performSearch(query: String, isMusic: Boolean) {
+    fun performSearch(query: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                val results = withContext(Dispatchers.IO) {
-                    if (isMusic) provider.searchSongs(query) else provider.searchVideos(query)
-                }
-                _uiState.value = _uiState.value.copy(results = results, isLoading = false)
+                val songs = withContext(Dispatchers.IO) { provider.searchSongs(query) }
+                val videos = withContext(Dispatchers.IO) { provider.searchVideos(query) }
+
+                _uiState.value = _uiState.value.copy(
+                    songResults = songs,
+                    videoResults = videos,
+                    isLoading = false
+                )
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message, isLoading = false)
             }
@@ -35,7 +42,8 @@ class SearchViewModel(private val provider: MusicSearchProvider) {
 }
 
 data class SearchUiState(
-    val results: List<TrackResult> = emptyList(),
+    val songResults: List<TrackResult> = emptyList(),
+    val videoResults: List<TrackResult> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )

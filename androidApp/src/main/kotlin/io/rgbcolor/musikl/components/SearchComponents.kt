@@ -66,7 +66,7 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
 
             Button(
                 onClick = {
-                    viewModel.performSearch(searchQuery, isMusicTab)
+                    viewModel.performSearch(searchQuery)
                     focusManager.clearFocus()
                 }
             ) {
@@ -85,11 +85,13 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
+                val currentResults = if (isMusicTab) uiState.songResults else uiState.videoResults
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    items(uiState.results) { track ->
+                    items(currentResults) { track ->
                         TrackItem(track, onClick = { onTrackClick(track) })
                     }
                 }
