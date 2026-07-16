@@ -26,7 +26,7 @@ compose.desktop {
         mainClass = "io.rgbcolor.musikl.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.AppImage)
             packageName = "Musikl"
             packageVersion = "0.1.0"
 
