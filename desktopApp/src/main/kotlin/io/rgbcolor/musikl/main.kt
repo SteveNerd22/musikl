@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.rgbcolor.musikl.components.DesktopMiniPlayer
@@ -23,7 +24,7 @@ import io.rgbcolor.musikl.tab.TabManager
 import kotlinx.coroutines.launch
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = "musikl") {
+    Window(onCloseRequest = ::exitApplication, title = "musikl", icon = painterResource("icon.png")) {
         DesktopAppShell()
     }
 }
