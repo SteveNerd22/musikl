@@ -28,7 +28,11 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.AppImage)
             packageName = "Musikl"
-            packageVersion = "0.1.0"
+            packageVersion = if (System.getProperty("os.name").lowercase().contains("mac")) {
+                "1.0.0"
+            } else {
+                "0.1.0"
+            }
 
             windows {
                 iconFile.set(project.file("src/main/resources/icon.ico"))
