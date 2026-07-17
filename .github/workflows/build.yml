@@ -24,9 +24,14 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev
 
+      # Risolve il problema del "Permission Denied" su macOS e Linux
+      - name: Make gradlew executable
+        if: runner.os != 'Windows'
+        run: chmod +x gradlew
+
       - name: Build with Gradle
+        shell: bash # Forza l'uso di Bash anche su Windows per far funzionare l'if/else
         run: |
-          # Per Windows usa gradlew.bat, per gli altri ./gradlew
           if [ "$RUNNER_OS" == "Windows" ]; then
             ./gradlew packageReleaseMsi
           elif [ "$RUNNER_OS" == "Linux" ]; then
