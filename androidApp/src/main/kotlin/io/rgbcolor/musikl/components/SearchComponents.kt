@@ -44,10 +44,10 @@ import io.rgbcolor.musikl.SearchViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> Unit) {
-    var isMusicTab by remember { mutableStateOf(true) }
-    var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val isMusicTab = uiState.isMusicTab
+    val listState = if (isMusicTab) viewModel.musicListState else viewModel.videoListState
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         Row(
@@ -55,8 +55,8 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
+                value = uiState.query,
+                onValueChange = { viewModel.updateQuery(it) },
                 modifier = Modifier.weight(1f),
                 label = { Text("Cerca...") },
                 singleLine = true
@@ -66,7 +66,7 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
 
             Button(
                 onClick = {
-                    viewModel.performSearch(searchQuery)
+                    viewModel.performSearch(uiState.query)
                     focusManager.clearFocus()
                 }
             ) {
@@ -77,8 +77,8 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
         Spacer(modifier = Modifier.height(16.dp))
 
         TabRow(selectedTabIndex = if (isMusicTab) 0 else 1) {
-            Tab(selected = isMusicTab, onClick = { isMusicTab = true }, text = { Text("Musica") })
-            Tab(selected = !isMusicTab, onClick = { isMusicTab = false }, text = { Text("Video") })
+            Tab(selected = isMusicTab, onClick = { viewModel.updateTab(true) }, text = { Text("Musica") })
+            Tab(selected = !isMusicTab, onClick = { viewModel.updateTab(false) }, text = { Text("Video") })
         }
 
         Box(modifier = Modifier.weight(1f)) {
@@ -88,11 +88,29 @@ fun SearchMainScreen(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
                 val currentResults = if (isMusicTab) uiState.songResults else uiState.videoResults
 
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    items(currentResults) { track ->
+                    items(
+                        items=currentResults,
+                        key = { track -> track.pageUrl }
+                    ) { track ->
+                        val index = currentResults.indexOf(track)
+                        if (index == currentResults.lastIndex && !uiState.isLoading && currentResults.isNotEmpty()) {
+                            androidx.compose.runtime.LaunchedEffect(index) {
+                                viewModel.performSearch(uiState.query, isLoadMore = true)
+                            }
+                        }
+
                         TrackItem(track, onClick = { onTrackClick(track) })
+                    }
+                    if (uiState.isLoading && currentResults.isNotEmpty()) {
+                        item {
+                            Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
                     }
                 }
             }

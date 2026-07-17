@@ -42,7 +42,7 @@ import io.rgbcolor.musikl.model.TrackResult
 fun SearchTabContent(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
-    val listState = if (uiState.isMusicTab) viewModel.musicListState else viewModel.videoListState
+    val listState = if (uiState.isMusicTab) viewModel.musicGridState else viewModel.videoGridState
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(

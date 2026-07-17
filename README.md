@@ -25,10 +25,10 @@ If you're looking for a polished, feature-complete music app — this isn't it (
 Rough order, no promises on timing or on ever finishing the list:
 
 - [x] Search
+- [x] Track playback
+- [x] Music caching
 - [ ] Playback queue
-- [ ] Track playback
 - [ ] Playlist creation
-- [ ] Music caching
 - [ ] Offline music
 - [ ] Playlist sharing
 - [ ] Audio output device control

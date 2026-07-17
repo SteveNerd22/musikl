@@ -1,5 +1,6 @@
 ﻿package io.rgbcolor.musikl
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import io.rgbcolor.musikl.model.TrackResult
 import io.rgbcolor.musikl.search.MusicSearchProvider
@@ -15,8 +16,10 @@ import kotlinx.coroutines.withContext
 class SearchViewModel(private val provider: MusicSearchProvider) {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-    val musicListState = LazyGridState()
-    val videoListState = LazyGridState()
+    val musicListState = LazyListState()
+    val videoListState = LazyListState()
+    val musicGridState = LazyGridState()
+    val videoGridState = LazyGridState()
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private var songPage = 0
     private var videoPage = 0
