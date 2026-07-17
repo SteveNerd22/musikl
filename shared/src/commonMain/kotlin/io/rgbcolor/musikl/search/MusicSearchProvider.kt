@@ -18,6 +18,7 @@ suspend fun MusicSearchProvider.resolveStreamUrlSafe(pageUrl: String): String? {
     return try {
         resolveStreamUrlInternal(pageUrl)
     } catch (e: Exception) {
+        println("MUSIKL resolveStreamUrlInternal fallito per $pageUrl: ${e.stackTraceToString()}")
         null
     }
 }

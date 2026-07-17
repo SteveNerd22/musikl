@@ -144,7 +144,6 @@ fun TrackItem(track: TrackResult, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Titolo (limitato a 2 righe per non sporcare il layout)
             Text(
                 text = track.title,
                 style = MaterialTheme.typography.bodyMedium,

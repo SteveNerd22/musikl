@@ -67,12 +67,8 @@ fun MiniPlayerBar(
     val scope = rememberCoroutineScope()
     val offsetY = remember { Animatable(0f) }
 
-    // Quanto puoi trascinare verso l'alto per ora: pochissimo, giusto un feedback
-    // tattile. Il player esteso arriverà in futuro, trascinando oltre questo limite.
     val maxUpwardDragPx = with(density) { 12.dp.toPx() }
-    // Oltre questa soglia di trascinamento verso il basso, al rilascio si chiude.
     val dismissThresholdPx = with(density) { 60.dp.toPx() }
-    // Limite oltre cui non segue più il dito, anche se continui a trascinare.
     val maxDownwardDragPx = with(density) { 140.dp.toPx() }
 
     Surface(

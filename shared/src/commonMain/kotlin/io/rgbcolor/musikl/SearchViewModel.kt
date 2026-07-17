@@ -67,7 +67,9 @@ class SearchViewModel(private val provider: MusicSearchProvider) {
     }
 
     suspend fun resolveStreamUrl(track: TrackResult): String? =
-        provider.resolveStreamUrlSafe(track.pageUrl)
+        withContext(Dispatchers.IO) {
+            provider.resolveStreamUrlSafe(track.pageUrl)
+        }
 }
 
 data class SearchUiState(
