@@ -40,6 +40,10 @@ jobs:
             ./gradlew packageReleaseDmg
           fi
 
+      - name: Print jpackage error log
+        if: failure()
+        run: cat desktopApp/build/compose/logs/createReleaseDistributable/jpackage-*-err.txt
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
