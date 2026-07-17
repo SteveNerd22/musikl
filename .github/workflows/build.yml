@@ -42,7 +42,15 @@ jobs:
 
       - name: Print jpackage error log
         if: failure()
-        run: cat desktopApp/build/compose/logs/createReleaseDistributable/jpackage-*-err.txt
+        shell: bash
+        run: |
+          LOG_FILE=$(ls desktopApp/build/compose/logs/createReleaseDistributable/jpackage-*-err.txt 2>/dev/null | head -n 1)
+          if [ -f "$LOG_FILE" ]; then
+            echo "--- Error log found, printing content: ---"
+            cat "$LOG_FILE"
+          else
+            echo "--- No error log found to print. ---"
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
