@@ -32,6 +32,8 @@ compose.desktop {
 
             windows {
                 iconFile.set(project.file("src/main/resources/icon.ico"))
+                menu = true
+                shortcut = true
             }
             macOS {
                 iconFile.set(project.file("src/main/resources/icon.icns"))
