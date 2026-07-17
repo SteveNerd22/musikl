@@ -41,8 +41,10 @@ fun DesktopAppShell() {
     fun onTrackClick(track: TrackResult, searchViewModel: SearchViewModel) {
         scope.launch {
             val streamUrl = searchViewModel.resolveStreamUrl(track)
-            if (playerState.isPlaying) playerViewModel.stop()
-            playerViewModel.play(track, streamUrl)
+            if(streamUrl != null) {
+                if (playerState.isPlaying) playerViewModel.stop()
+                playerViewModel.play(track, streamUrl)
+            }
         }
     }
 

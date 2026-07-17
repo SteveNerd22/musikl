@@ -13,9 +13,6 @@ class VlcjMusicPlayerProvider : MusicPlayerProvider {
 
     private val _state = MutableStateFlow(PlayerUiState())
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()
-
-    // AudioPlayerComponent incapsula factory + media player, comodo per
-    // un caso puramente audio (non ci serve un componente video).
     private val audioComponent = AudioPlayerComponent()
     private val player: MediaPlayer get() = audioComponent.mediaPlayer()
 

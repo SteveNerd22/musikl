@@ -42,6 +42,7 @@ import io.rgbcolor.musikl.model.TrackResult
 fun SearchTabContent(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val listState = if (uiState.isMusicTab) viewModel.musicListState else viewModel.videoListState
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
@@ -75,13 +76,33 @@ fun SearchTabContent(viewModel: SearchViewModel, onTrackClick: (TrackResult) -> 
                 val currentResults = if (uiState.isMusicTab) uiState.songResults else uiState.videoResults
 
                 LazyVerticalGrid(
+                    state = listState,
                     columns = GridCells.Adaptive(minSize = 160.dp),
                     contentPadding = PaddingValues(4.dp),
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    items(currentResults) { track ->
+                    items(
+                        items = currentResults,
+                    ) { track ->
+                        val index = currentResults.indexOf(track)
+                        if (index == currentResults.lastIndex && !uiState.isLoading && currentResults.isNotEmpty()) {
+                            androidx.compose.runtime.LaunchedEffect(index) {
+                                viewModel.performSearch(uiState.query, isLoadMore = true)
+                            }
+                        }
+
                         TrackGridItem(track, onClick = { onTrackClick(track) })
                     }
+
+                    if (uiState.isLoading && currentResults.isNotEmpty()) {
+                        item {
+                            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                        }
+                    }
+                }
+
+                if (uiState.isLoading && currentResults.isEmpty()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
         }

@@ -1,7 +1,9 @@
 ﻿package io.rgbcolor.musikl
 
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import io.rgbcolor.musikl.model.TrackResult
 import io.rgbcolor.musikl.search.MusicSearchProvider
+import io.rgbcolor.musikl.search.resolveStreamUrlSafe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,28 +11,44 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.cancellation.CancellationException
 
 class SearchViewModel(private val provider: MusicSearchProvider) {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    val musicListState = LazyGridState()
+    val videoListState = LazyGridState()
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
+    private var songPage = 0
+    private var videoPage = 0
 
-    fun performSearch(query: String) {
+    fun performSearch(query: String, isLoadMore: Boolean = false) {
+        if (!isLoadMore) {
+            songPage = 0
+            videoPage = 0
+            _uiState.value = _uiState.value.copy(
+                songResults = emptyList(),
+                videoResults = emptyList(),
+                isLoading = true,
+                error = null
+            )
+        } else {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+        }
+
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
             try {
-                val songs = withContext(Dispatchers.IO) { provider.searchSongs(query) }
-                val videos = withContext(Dispatchers.IO) { provider.searchVideos(query) }
+                val newSongs = withContext(Dispatchers.IO) { provider.searchSongs(query, page = songPage) }
+                val newVideos = withContext(Dispatchers.IO) { provider.searchVideos(query, page = videoPage) }
 
                 _uiState.value = _uiState.value.copy(
-                    songResults = songs,
-                    videoResults = videos,
+                    songResults = if (isLoadMore) _uiState.value.songResults + newSongs else newSongs,
+                    videoResults = if (isLoadMore) _uiState.value.videoResults + newVideos else newVideos,
                     isLoading = false
                 )
-            } catch (e: CancellationException) {
-                throw e
+
+                if (newSongs.isNotEmpty()) songPage++
+                if (newVideos.isNotEmpty()) videoPage++
+
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message, isLoading = false)
             }
@@ -45,8 +63,8 @@ class SearchViewModel(private val provider: MusicSearchProvider) {
         _uiState.value = _uiState.value.copy(isMusicTab = isMusicTab)
     }
 
-    suspend fun resolveStreamUrl(track: TrackResult): String =
-        provider.resolveStreamUrl(track.pageUrl)
+    suspend fun resolveStreamUrl(track: TrackResult): String? =
+        provider.resolveStreamUrlSafe(track.pageUrl)
 }
 
 data class SearchUiState(
