@@ -31,7 +31,7 @@ compose.desktop {
             packageVersion = if (System.getProperty("os.name").lowercase().contains("mac")) {
                 "1.0.0"
             } else {
-                "0.1.0"
+                "0.1.1"
             }
 
             windows {

@@ -35,9 +35,18 @@ kotlin {
             dependsOn(jvmCommonMain)
             dependencies {
                 implementation(libs.vlcj)
-                implementation("${libs.javafx.base.get()}:win")
-                implementation("${libs.javafx.media.get()}:win")
-                implementation("${libs.javafx.graphics.get()}:win")
+
+                val os = System.getProperty("os.name").lowercase()
+                val classifier = when {
+                    os.contains("win") -> "win"
+                    os.contains("mac") -> "mac"
+                    os.contains("nux") -> "linux"
+                    else -> "win"
+                }
+
+                implementation("${libs.javafx.base.get()}:$classifier")
+                implementation("${libs.javafx.media.get()}:$classifier")
+                implementation("${libs.javafx.graphics.get()}:$classifier")
             }
         }
 
