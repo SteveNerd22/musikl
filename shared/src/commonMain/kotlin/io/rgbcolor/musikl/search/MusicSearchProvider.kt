@@ -1,13 +1,12 @@
 ﻿package io.rgbcolor.musikl.search
 
+import io.rgbcolor.musikl.MusicProvider
 import io.rgbcolor.musikl.model.TrackResult
 
-interface MusicSearchProvider {
+interface MusicSearchProvider : MusicProvider{
     suspend fun searchSongs(query: String, page: Int) : List<TrackResult>
     suspend fun searchVideos(query: String, page: Int) : List<TrackResult>
     suspend fun resolveStreamUrlInternal(pageUrl: String): String
-
-    suspend fun warmUp() {}
 
     companion object {
         const val DEFAULT_PAGE_SIZE = 30

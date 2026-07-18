@@ -1,5 +1,7 @@
 ﻿package io.rgbcolor.musikl.search.newpipe
 
+import io.rgbcolor.musikl.AudioFormat
+import io.rgbcolor.musikl.Capabilities
 import io.rgbcolor.musikl.model.TrackResult
 import io.rgbcolor.musikl.search.MusicSearchProvider
 import io.rgbcolor.musikl.search.MusicSearchProvider.Companion.DEFAULT_PAGE_SIZE
@@ -23,6 +25,8 @@ class NewPipeSearchProvider(
     private val maxCachedQueries: Int = 100,
 ) : MusicSearchProvider {
 
+    override var capabilities: Capabilities = Capabilities(supportedFormats = emptySet())
+
     private class SearchCursor {
         val mutex = Mutex()
         val items = mutableListOf<TrackResult>()
@@ -40,6 +44,11 @@ class NewPipeSearchProvider(
         NewPipeInit.ready
     }
 
+    override fun onHandshake(otherCapabilities: Capabilities) {
+        this.capabilities = otherCapabilities
+        println("[newpipe] ottenute capabilities:${this.capabilities}")
+    }
+
     override suspend fun searchSongs(query: String, page: Int): List<TrackResult> =
         search(query, YoutubeSearchQueryHandlerFactory.MUSIC_SONGS, page)
 
@@ -48,9 +57,31 @@ class NewPipeSearchProvider(
 
     override suspend fun resolveStreamUrlInternal(pageUrl: String): String {
         NewPipeInit.ready
+
         val streamInfo = StreamInfo.getInfo(ServiceList.YouTube, pageUrl)
-        return streamInfo.audioStreams.maxByOrNull { it.averageBitrate }?.content
-            ?: throw Exception("Nessuno stream audio disponibile")
+        val supported = capabilities.supportedFormats
+        println("supported formats:\n$supported")
+        val bestStream = streamInfo.audioStreams
+            .filter { stream ->
+                val format = mapNewPipeFormat(stream.format.toString())
+                supported.contains(format)
+            }
+            .maxByOrNull { it.averageBitrate }
+            ?: throw Exception("Nessuno stream audio compatibile trovato per i formati: $supported")
+
+        println("DEBUG: URL selezionato: ${bestStream.content}")
+        println("DEBUG: Formato selezionato: ${bestStream.format}")
+        return bestStream.content
+    }
+
+    private fun mapNewPipeFormat(format: String): AudioFormat? {
+        val f = format.uppercase()
+        return when {
+            f.contains("OPUS") -> AudioFormat.OPUS
+            f.contains("M4A") || f.contains("MP4") -> AudioFormat.M4A
+            f.contains("MP3") -> AudioFormat.MP3
+            else -> null
+        }
     }
 
     private suspend fun search(query: String, contentFilter: String, page: Int): List<TrackResult> {

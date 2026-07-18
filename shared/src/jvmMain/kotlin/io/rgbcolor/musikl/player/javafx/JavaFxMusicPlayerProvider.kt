@@ -1,5 +1,7 @@
 ﻿package io.rgbcolor.musikl.player.javafx
 
+import io.rgbcolor.musikl.AudioFormat
+import io.rgbcolor.musikl.Capabilities
 import io.rgbcolor.musikl.player.MusicPlayerProvider
 import io.rgbcolor.musikl.player.PlayerUiState
 import javafx.application.Platform
@@ -19,6 +21,9 @@ class JavaFxMusicPlayerProvider : MusicPlayerProvider {
 
     private val _state = MutableStateFlow(PlayerUiState())
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()
+    override val capabilities = Capabilities(
+        supportedFormats = setOf(AudioFormat.M4A)
+    )
 
     private var mediaPlayer: MediaPlayer? = null
 
@@ -32,7 +37,9 @@ class JavaFxMusicPlayerProvider : MusicPlayerProvider {
             println("dentro runLater, sto per creare Media")
             mediaPlayer?.dispose()
 
-            val media = Media(url)
+            val forcedUrl = if (!url.contains(".m4a")) "$url&dummy=.m4a" else url
+
+            val media = Media(forcedUrl)
             println("Media creato: $media")
             val player = MediaPlayer(media)
             mediaPlayer = player

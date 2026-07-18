@@ -1,5 +1,7 @@
 ﻿package io.rgbcolor.musikl.player.vlcj
 
+import io.rgbcolor.musikl.AudioFormat
+import io.rgbcolor.musikl.Capabilities
 import io.rgbcolor.musikl.player.MusicPlayerProvider
 import io.rgbcolor.musikl.player.PlayerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,4 +73,8 @@ class VlcjMusicPlayerProvider : MusicPlayerProvider {
     override fun release() {
         audioComponent.release()
     }
+
+    override val capabilities = Capabilities (
+        supportedFormats= setOf(AudioFormat.AAC, AudioFormat.M4A, AudioFormat.MP3, AudioFormat.WAV, AudioFormat.OPUS)
+    )
 }

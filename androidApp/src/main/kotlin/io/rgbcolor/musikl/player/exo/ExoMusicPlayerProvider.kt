@@ -5,6 +5,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import io.rgbcolor.musikl.AudioFormat
+import io.rgbcolor.musikl.Capabilities
 import io.rgbcolor.musikl.player.MusicPlayerProvider
 import io.rgbcolor.musikl.player.PlayerUiState
 import kotlinx.coroutines.CoroutineScope
@@ -76,4 +78,8 @@ class ExoMusicPlayerProvider(context: Context) : MusicPlayerProvider {
     override fun release() {
         exoPlayer.release()
     }
+
+    override val capabilities = Capabilities (
+        supportedFormats= setOf(AudioFormat.AAC, AudioFormat.M4A, AudioFormat.MP3, AudioFormat.WAV, AudioFormat.OPUS)
+    )
 }

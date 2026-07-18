@@ -1,8 +1,9 @@
 ﻿package io.rgbcolor.musikl.player
 
+import io.rgbcolor.musikl.MusicProvider
 import kotlinx.coroutines.flow.StateFlow
 
-interface MusicPlayerProvider {
+interface MusicPlayerProvider : MusicProvider{
     val state: StateFlow<PlayerUiState>
 
     fun play(url: String)
