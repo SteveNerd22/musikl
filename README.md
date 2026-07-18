@@ -68,6 +68,9 @@ Musikl is built on top of these open-source projects:
 - **[jsoup](https://github.com/jhy/jsoup)** — HTML parsing, used internally by NewPipeExtractor
 - **[AndroidX Jetpack libraries](https://developer.android.com/jetpack/androidx)** (Activity, AppCompat, Core, Lifecycle) — Android platform support
 - **[Desugar JDK Libs NIO](https://github.com/google/desugar_jdk_libs)** — core library desugaring, needed on Android for Java APIs (like `URLEncoder.encode(String, Charset)`) not available below API 33
+- **[Concentus](https://github.com/jaredmdobson/concentus)** — Pure Java/Kotlin Opus audio decoder
+- **[vlcj](https://github.com/caprica/vlcj)** — Multimedia framework for Desktop playback
+- **[org.json](https://github.com/stleary/JSON-java)** — JSON processing library
 
 Build-time only (not shipped in the final app, but worth crediting):
 

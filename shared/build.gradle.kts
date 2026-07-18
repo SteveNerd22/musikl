@@ -21,6 +21,7 @@ kotlin {
             dependencies {
                 implementation(libs.newpipe.extractor)
                 implementation(libs.okhttp)
+                implementation(libs.concentus)
             }
         }
 
@@ -35,7 +36,6 @@ kotlin {
             dependsOn(jvmCommonMain)
             dependencies {
                 implementation(libs.vlcj)
-
                 val os = System.getProperty("os.name").lowercase()
                 val classifier = when {
                     os.contains("win") -> "win"

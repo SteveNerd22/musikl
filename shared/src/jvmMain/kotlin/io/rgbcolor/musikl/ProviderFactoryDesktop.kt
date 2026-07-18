@@ -1,6 +1,6 @@
 ﻿package io.rgbcolor.musikl
 
 import io.rgbcolor.musikl.player.MusicPlayerProvider
-import io.rgbcolor.musikl.player.vlcj.VlcjMusicPlayerProvider
+import io.rgbcolor.musikl.player.opuswebm.DesktopOpusMusicPlayerProvider
 
-actual fun defaultMusicPlayerProvider(): MusicPlayerProvider? = VlcjMusicPlayerProvider()
+actual fun defaultMusicPlayerProvider(): MusicPlayerProvider? = DesktopOpusMusicPlayerProvider()
