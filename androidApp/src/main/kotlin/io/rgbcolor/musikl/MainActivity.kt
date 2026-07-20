@@ -29,7 +29,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        ProviderRegistry.registerPlayerProvider(ExoMusicPlayerProvider(applicationContext))
+        val playerProvider = ExoMusicPlayerProvider(applicationContext)
+        ProviderRegistry.registerPlayerProvider(playerProvider)
+        ProviderRegistry.setPlayerProvider(playerProvider.name)
 
         setContent {
             MobileAppShell()

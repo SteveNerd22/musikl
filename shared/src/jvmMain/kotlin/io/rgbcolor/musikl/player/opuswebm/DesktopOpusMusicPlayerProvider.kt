@@ -6,6 +6,7 @@ import javax.sound.sampled.SourceDataLine
 
 /** Implementazione desktop del provider Opus/WebM, con output via javax.sound.sampled. */
 class DesktopOpusMusicPlayerProvider : BaseOpusMusicPlayerProvider() {
+    override val name = "Opus/WebM"
 
     override fun createAudioSink(sampleRate: Int, channels: Int): PcmAudioSink {
         val javaFormat = JavaAudioFormat(

@@ -1,6 +1,7 @@
 ﻿package io.rgbcolor.musikl
 
 interface MusicProvider {
+    public val name: String
     val capabilities: Capabilities
 
     suspend fun warmUp() {}

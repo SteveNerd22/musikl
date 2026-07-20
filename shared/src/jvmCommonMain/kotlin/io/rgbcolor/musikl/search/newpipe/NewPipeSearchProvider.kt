@@ -24,6 +24,7 @@ class NewPipeSearchProvider(
     private val pageSize: Int = DEFAULT_PAGE_SIZE,
     private val maxCachedQueries: Int = 100,
 ) : MusicSearchProvider {
+    override val name: String = "NewPipe"
 
     override var capabilities: Capabilities = Capabilities(supportedFormats = emptySet())
 

@@ -19,6 +19,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class ExoMusicPlayerProvider(context: Context) : MusicPlayerProvider {
+    override val name = "Media3/Exo"
 
     private val _state = MutableStateFlow(PlayerUiState())
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()

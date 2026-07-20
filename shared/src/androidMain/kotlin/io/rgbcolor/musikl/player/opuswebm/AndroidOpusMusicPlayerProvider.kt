@@ -6,6 +6,7 @@ import android.media.AudioFormat as AndroidAudioFormat
 
 /** Implementazione Android del provider Opus/WebM, con output via android.media.AudioTrack. */
 class AndroidOpusMusicPlayerProvider : BaseOpusMusicPlayerProvider() {
+    override val name = "Opus/WebM"
 
     override fun createAudioSink(sampleRate: Int, channels: Int): PcmAudioSink {
         val channelMask = if (channels >= 2) {

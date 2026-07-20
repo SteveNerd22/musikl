@@ -18,6 +18,7 @@ private object JavaFxToolkit {
 }
 
 class JavaFxMusicPlayerProvider : MusicPlayerProvider {
+    override val name = "JavaFX"
 
     private val _state = MutableStateFlow(PlayerUiState())
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()

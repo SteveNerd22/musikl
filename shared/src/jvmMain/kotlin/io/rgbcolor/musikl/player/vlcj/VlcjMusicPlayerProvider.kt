@@ -12,6 +12,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter
 import uk.co.caprica.vlcj.player.component.AudioPlayerComponent
 
 class VlcjMusicPlayerProvider : MusicPlayerProvider {
+    override val name = "VLCj"
 
     private val _state = MutableStateFlow(PlayerUiState())
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()
