@@ -5,7 +5,11 @@ import io.rgbcolor.musikl.search.MusicSearchProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 expect fun defaultMusicSearchProvider(): MusicSearchProvider?
 expect fun defaultMusicPlayerProvider(): MusicPlayerProvider?
@@ -17,11 +21,17 @@ object ProviderRegistry {
     private var playerOverride: MusicPlayerProvider? = null
     private val warmedUpProviders = mutableSetOf<MusicProvider>()
 
+    private val _activeSearchProviderName = MutableStateFlow<String?>(null)
+    val activeSearchProviderName: StateFlow<String?> = _activeSearchProviderName.asStateFlow()
+
+    private val _activePlayerProviderName = MutableStateFlow<String?>(null)
+    val activePlayerProviderName: StateFlow<String?> = _activePlayerProviderName.asStateFlow()
+
     fun setPlayerProvider(providerName: String) {
         warmedUpProviders
             .filterIsInstance<MusicPlayerProvider>()
             .firstOrNull { it.name == providerName }
-            ?.let { playerOverride = it }
+            ?.let { setActivePlayerProvider(it) }
         performHandshake()
     }
 
@@ -29,7 +39,7 @@ object ProviderRegistry {
         warmedUpProviders
             .filterIsInstance<MusicSearchProvider>()
             .firstOrNull { it.name == providerName }
-            ?.let { searchOverride = it }
+            ?.let { setActiveSearchProvider(it) }
         performHandshake()
     }
 
@@ -39,19 +49,27 @@ object ProviderRegistry {
     fun getSearchProviders(): List<String> =
         warmedUpProviders.filterIsInstance<MusicSearchProvider>().map { it.name }
 
-    fun registerPlayerProvider(provider: MusicPlayerProvider) {
-        triggerWarmUp(provider)
+    inline fun <reified T : MusicPlayerProvider> registerPlayerProvider(noinline factory: () -> T): T {
+        @Suppress("UNCHECKED_CAST")
+        return triggerWarmUp(T::class, factory) as T
     }
 
-    fun registerSearchProvider(provider: MusicSearchProvider) {
-        triggerWarmUp(provider)
+    inline fun <reified T : MusicSearchProvider> registerSearchProvider(noinline factory: () -> T): T {
+        @Suppress("UNCHECKED_CAST")
+        return triggerWarmUp(T::class, factory) as T
     }
+
+    fun getWarmedUpProviders(): List<String> =
+        synchronized(warmedUpProviders) {
+            warmedUpProviders.map { "${it::class.simpleName} (${it.name})" }
+        }
 
     fun musicSearchProvider(): MusicSearchProvider {
         registerProviders()
         if (searchOverride == null) {
-            searchOverride = defaultMusicSearchProvider()
-                    ?: error("Nessun MusicSearchProvider disponibile")
+            val default = defaultMusicSearchProvider()
+                ?: error("Nessun MusicSearchProvider disponibile")
+            setActiveSearchProvider(triggerWarmUp(default) as MusicSearchProvider)
         }
 
         val provider = searchOverride!!
@@ -63,8 +81,9 @@ object ProviderRegistry {
     fun musicPlayerProvider(): MusicPlayerProvider {
         registerProviders()
         if (playerOverride == null) {
-            playerOverride = defaultMusicPlayerProvider()
-                    ?: error("Nessun MusicPlayerProvider disponibile")
+            val default = defaultMusicPlayerProvider()
+                ?: error("Nessun MusicPlayerProvider disponibile")
+            setActivePlayerProvider(triggerWarmUp(default) as MusicPlayerProvider)
         }
 
         val provider = playerOverride!!
@@ -73,16 +92,31 @@ object ProviderRegistry {
         return provider
     }
 
-    private fun triggerWarmUp(provider: MusicProvider) {
+    private fun setActiveSearchProvider(provider: MusicSearchProvider) {
+        searchOverride = provider
+        _activeSearchProviderName.value = provider.name
+    }
+
+    private fun setActivePlayerProvider(provider: MusicPlayerProvider) {
+        playerOverride = provider
+        _activePlayerProviderName.value = provider.name
+    }
+
+    @PublishedApi
+    internal fun triggerWarmUp(key: KClass<*>, factory: () -> MusicProvider): MusicProvider {
         synchronized(warmedUpProviders) {
-            if (provider !in warmedUpProviders) {
-                warmedUpProviders.add(provider)
-                registryScope.launch {
-                    provider.warmUp()
-                }
-            }
+            val existing = warmedUpProviders.firstOrNull { it::class == key }
+            if (existing != null) return existing
+
+            val provider = factory()
+            warmedUpProviders.add(provider)
+            registryScope.launch { provider.warmUp() }
+            return provider
         }
     }
+
+    private fun triggerWarmUp(provider: MusicProvider): MusicProvider =
+        triggerWarmUp(provider::class) { provider }
 
     private fun performHandshake() {
         val search = searchOverride ?: defaultMusicSearchProvider()
@@ -90,7 +124,6 @@ object ProviderRegistry {
 
         if (search != null && player != null) {
             val playerCaps = player.capabilities
-            println("[registry] invio capabilits ${player.capabilities} da {${player.javaClass}} a {${search.javaClass}}")
             search.onHandshake(playerCaps)
         }
     }

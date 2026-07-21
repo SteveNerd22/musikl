@@ -11,12 +11,8 @@ actual fun defaultMusicPlayerProvider(): MusicPlayerProvider? {
 }
 
 actual fun registerProviders() {
-    val newPipeSearchProvider = NewPipeSearchProvider()
-    ProviderRegistry.registerSearchProvider(newPipeSearchProvider)
-    val opusProvider = DesktopOpusMusicPlayerProvider()
-    ProviderRegistry.registerPlayerProvider(opusProvider)
-    val javafxProvider = JavaFxMusicPlayerProvider()
-    ProviderRegistry.registerPlayerProvider(javafxProvider)
-    val vlcjMusicPlayerProvider = VlcjMusicPlayerProvider()
-    ProviderRegistry.registerPlayerProvider(vlcjMusicPlayerProvider)
+    ProviderRegistry.registerSearchProvider { NewPipeSearchProvider() }
+    ProviderRegistry.registerPlayerProvider { DesktopOpusMusicPlayerProvider() }
+    //ProviderRegistry.registerPlayerProvider { JavaFxMusicPlayerProvider() } // temporaneamnete disabilitato
+    ProviderRegistry.registerPlayerProvider { VlcjMusicPlayerProvider() }
 }

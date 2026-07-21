@@ -43,11 +43,19 @@ class NewPipeSearchProvider(
 
     override suspend fun warmUp() = withContext(Dispatchers.IO) {
         NewPipeInit.ready
+        try {
+            val extractor = ServiceList.YouTube.getSearchExtractor(
+                "test",
+                listOf(YoutubeSearchQueryHandlerFactory.MUSIC_SONGS),
+                "",
+            )
+            extractor.fetchPage()
+        } catch (e: Exception) {
+        }
     }
 
     override fun onHandshake(otherCapabilities: Capabilities) {
         this.capabilities = otherCapabilities
-        println("[newpipe] ottenute capabilities:${this.capabilities}")
     }
 
     override suspend fun searchSongs(query: String, page: Int): List<TrackResult> =
@@ -69,9 +77,6 @@ class NewPipeSearchProvider(
             }
             .maxByOrNull { it.averageBitrate }
             ?: throw Exception("Nessuno stream audio compatibile trovato per i formati: $supported")
-
-        println("DEBUG: URL selezionato: ${bestStream.content}")
-        println("DEBUG: Formato selezionato: ${bestStream.format}")
         return bestStream.content
     }
 

@@ -33,21 +33,16 @@ class JavaFxMusicPlayerProvider : MusicPlayerProvider {
     }
 
     override fun play(url: String) {
-        println("play() chiamato con url=$url")
         Platform.runLater {
-            println("dentro runLater, sto per creare Media")
             mediaPlayer?.dispose()
 
             val forcedUrl = if (!url.contains(".m4a")) "$url&dummy=.m4a" else url
 
             val media = Media(forcedUrl)
-            println("Media creato: $media")
             val player = MediaPlayer(media)
             mediaPlayer = player
-            println("MediaPlayer creato")
 
             player.setOnReady {
-                println("player pronto, durata=${player.totalDuration}")
                 _state.value = _state.value.copy(
                     durationMs = player.totalDuration.toMillis().toLong(),
                 )
@@ -70,7 +65,6 @@ class JavaFxMusicPlayerProvider : MusicPlayerProvider {
                 _state.value = _state.value.copy(error = player.error?.message)
             }
 
-            println("chiamo player.play()")
             player.play()
         }
     }
@@ -80,7 +74,6 @@ class JavaFxMusicPlayerProvider : MusicPlayerProvider {
     }
 
     override fun resume() {
-        println("resume() chiamato")
         Platform.runLater { mediaPlayer?.play() }
     }
 

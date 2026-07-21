@@ -2,10 +2,6 @@
 
 import io.github.jaredmdobson.concentus.OpusDecoder
 
-/**
- * Decodifica pacchetti Opus grezzi in PCM a 16 bit interleaved, usando Concentus
- * (implementazione Java pura del decoder Opus di riferimento, nessuna dipendenza nativa).
- */
 class OpusStreamDecoder(sampleRate: Int, private val channels: Int) {
 
     private val decodeSampleRate = normalizeSampleRate(sampleRate)
@@ -17,14 +13,14 @@ class OpusStreamDecoder(sampleRate: Int, private val channels: Int) {
     val outputSampleRate: Int get() = decodeSampleRate
     val outputChannels: Int get() = channels
 
-    /**
-     * Decodifica un pacchetto Opus. Ritorna un array PCM interleaved
-     * (lunghezza = campioni_decodificati * channels), dimensionato esattamente
-     * sull'audio prodotto (non sul buffer interno).
-     */
     fun decode(packet: ByteArray): ShortArray {
         val samplesDecoded = decoder.decode(packet, 0, packet.size, pcmBuffer, 0, maxFrameSamples, false)
         return pcmBuffer.copyOf(samplesDecoded * channels)
+    }
+
+    fun warmUp() {
+        val frameSamples = decodeSampleRate / 1000 * 20
+        decoder.decode(null, 0, 0, pcmBuffer, 0, frameSamples, false)
     }
 
     private fun normalizeSampleRate(sr: Int): Int = when {

@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
-    implementation(libs.androidx.material3)
+    implementation(libs.compose.material3)
 
     implementation(libs.compose.materialIconsCore)
     implementation(libs.compose.materialIconsExtended)
@@ -31,7 +31,7 @@ compose.desktop {
             packageVersion = if (System.getProperty("os.name").lowercase().contains("mac")) {
                 "1.0.0"
             } else {
-                "0.2.0"
+                "0.3.0"
             }
 
             windows {

@@ -1,7 +1,6 @@
 package io.rgbcolor.musikl
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +19,7 @@ import androidx.compose.ui.Modifier
 import io.rgbcolor.musikl.components.MiniPlayerBar
 import io.rgbcolor.musikl.components.MyBottomNavigation
 import io.rgbcolor.musikl.components.SearchMainScreen
+import io.rgbcolor.musikl.components.SettingsScreen
 import io.rgbcolor.musikl.model.TrackResult
 import io.rgbcolor.musikl.player.exo.ExoMusicPlayerProvider
 import kotlinx.coroutines.launch
@@ -29,8 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val playerProvider = ExoMusicPlayerProvider(applicationContext)
-        ProviderRegistry.registerPlayerProvider(playerProvider)
+        val playerProvider = ProviderRegistry.registerPlayerProvider { ExoMusicPlayerProvider(applicationContext) }
         ProviderRegistry.setPlayerProvider(playerProvider.name)
 
         setContent {
@@ -95,7 +94,7 @@ fun MobileAppShell() {
         Box(modifier = Modifier.padding(paddingValues)) {
             when (currentScreen) {
                 Screen.RICERCA -> SearchMainScreen(searchViewModel, onTrackClick = ::onTrackClick)
-                Screen.OPZIONI -> { /* Qui metterai la UI delle opzioni */ }
+                Screen.OPZIONI -> { SettingsScreen() }
                 Screen.PLAYLIST -> { /* Qui metterai la UI delle playlist */ }
             }
         }

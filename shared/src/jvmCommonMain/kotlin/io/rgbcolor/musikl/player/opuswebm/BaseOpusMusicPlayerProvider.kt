@@ -45,7 +45,6 @@ abstract class BaseOpusMusicPlayerProvider : MusicPlayerProvider {
     protected abstract fun createAudioSink(sampleRate: Int, channels: Int): PcmAudioSink
 
     override fun play(url: String) {
-        println("[opus] play() chiamato con url=$url")
         currentUrl = url
         playbackJob?.cancel()
         sink?.close()
@@ -56,9 +55,27 @@ abstract class BaseOpusMusicPlayerProvider : MusicPlayerProvider {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                println("[opus] ERRORE: ${e.message}")
                 e.printStackTrace()
                 _state.value = _state.value.copy(error = e.message, isPlaying = false, isBuffering = false)
+            }
+        }
+    }
+
+    override suspend fun warmUp() {
+        super.warmUp()
+        withContext(Dispatchers.IO) {
+            try {
+                val warmupSink = createAudioSink(48_000, 2)
+                warmupSink.start()
+                warmupSink.stop()
+                warmupSink.close()
+            } catch (e: Exception) {
+            }
+
+            try {
+                val warmupDecoder = OpusStreamDecoder(48_000, 2)
+                repeat(3) { warmupDecoder.warmUp() }
+            } catch (e: Exception) {
             }
         }
     }
@@ -84,7 +101,6 @@ abstract class BaseOpusMusicPlayerProvider : MusicPlayerProvider {
         demuxer = demux
         val info = demux.readTrackInfo()
         trackInfo = info
-        println("[opus] traccia trovata: trackNumber=${info.trackNumber} sampleRate=${info.sampleRate} channels=${info.channels}")
 
         demux.durationMs?.let { d ->
             _state.value = _state.value.copy(durationMs = d)
@@ -126,7 +142,6 @@ abstract class BaseOpusMusicPlayerProvider : MusicPlayerProvider {
 
         audioSink.drain()
         _state.value = _state.value.copy(isPlaying = false)
-        println("[opus] riproduzione terminata")
     }
 
     private fun shortsToLittleEndianBytes(shorts: ShortArray): ByteArray {
@@ -194,7 +209,6 @@ abstract class BaseOpusMusicPlayerProvider : MusicPlayerProvider {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                println("[opus] ERRORE durante seek: ${e.message}")
                 e.printStackTrace()
                 _state.value = _state.value.copy(error = e.message, isPlaying = false, isBuffering = false)
             }

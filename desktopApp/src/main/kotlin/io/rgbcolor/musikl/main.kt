@@ -16,6 +16,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.rgbcolor.musikl.components.DesktopMiniPlayer
 import io.rgbcolor.musikl.components.SearchTabContent
+import io.rgbcolor.musikl.components.SettingsTabContent
 import io.rgbcolor.musikl.components.Sidebar
 import io.rgbcolor.musikl.components.TabStrip
 import io.rgbcolor.musikl.model.TrackResult
@@ -24,7 +25,7 @@ import io.rgbcolor.musikl.tab.TabManager
 import kotlinx.coroutines.launch
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = "musikl", icon = painterResource("icon.png")) {
+    Window(onCloseRequest = ::exitApplication, title = "Musikl", icon = painterResource("icon.png")) {
         DesktopAppShell()
     }
 }
@@ -74,7 +75,7 @@ fun DesktopAppShell() {
                     )
                     is TabContent.Song -> { /* TODO: dettaglio brano */ }
                     is TabContent.Playlist -> {/* TODO: schermata playlist */}
-                    is TabContent.Settings -> {/* TODO: schermata settings */}
+                    is TabContent.Settings -> SettingsTabContent()
                     null -> { /* non dovrebbe mai succedere: tabs non è mai vuota */ }
                 }
             }
